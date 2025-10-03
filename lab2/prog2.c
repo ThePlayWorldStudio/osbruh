@@ -83,6 +83,7 @@ int main() {
         pid_t pid = fork();
         if (pid == 0) {
             sync_file(src_path, dst_path);
+	    system("pstree | grep -i alacritty");
             exit(0);
         } else if (pid > 0) {
             active_procs++;
