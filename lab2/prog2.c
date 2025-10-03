@@ -9,6 +9,7 @@
 #include <errno.h>
 
 #define BUF_SIZE 4096
+#define MAX_PATH 512
 
 int file_exists(const char *path) {
     struct stat st;
@@ -42,8 +43,44 @@ ssize_t copy_file(const char *src, const char *dst) {
 
 void sync_file(const char *src_path, const char *dst_path) {
     ssize_t copied = copy_file(src_path, dst_path);
-    printf("[PID %d] Копирован файл: %s\n", getpid(), src_path);
+    printf("[PID %d] Копирован файл: %s → %s\n", getpid(), src_path, dst_path);
     printf("  Скопировано байт: %zd\n\n", copied >= 0 ? copied : 0);
+}
+
+void sync_dirs(const char *src_dir, const char *dst_dir, int *active_procs, int max_procs) {
+    DIR *d = opendir(src_dir);
+    if (!d) {
+        perror("Ошибка открытия каталога");
+        return;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(d)) != NULL) {
+        if (entry->d_type != DT_REG) continue;
+
+        char src_path[MAX_PATH], dst_path[MAX_PATH];
+        snprintf(src_path, sizeof(src_path), "%s/%s", src_dir, entry->d_name);
+        snprintf(dst_path, sizeof(dst_path), "%s/%s", dst_dir, entry->d_name);
+
+        if (file_exists(dst_path)) continue;
+
+        while (*active_procs >= max_procs) {
+            wait(NULL);
+            (*active_procs)--;
+        }
+
+        pid_t pid = fork();
+        if (pid == 0) {
+            sync_file(src_path, dst_path);
+            exit(0);
+        } else if (pid > 0) {
+            (*active_procs)++;
+        } else {
+            perror("Ошибка fork");
+        }
+    }
+
+    closedir(d);
 }
 
 int main() {
@@ -57,43 +94,15 @@ int main() {
     printf("Введите максимальное число процессов: ");
     scanf("%d", &max_procs);
 
-    DIR *d1 = opendir(dir1);
-    if (!d1) {
-        perror("Ошибка открытия Dir1");
-        return 1;
-    }
-
-    struct dirent *entry;
     int active_procs = 0;
 
-    while ((entry = readdir(d1)) != NULL) {
-        if (entry->d_type != DT_REG) continue;
+    // Синхронизация Dir1 → Dir2
+    sync_dirs(dir1, dir2, &active_procs, max_procs);
 
-        char src_path[512], dst_path[512];
-        snprintf(src_path, sizeof(src_path), "%s/%s", dir1, entry->d_name);
-        snprintf(dst_path, sizeof(dst_path), "%s/%s", dir2, entry->d_name);
+    // Синхронизация Dir2 → Dir1
+    sync_dirs(dir2, dir1, &active_procs, max_procs);
 
-        if (file_exists(dst_path)) continue;
-
-        while (active_procs >= max_procs) {
-            wait(NULL);
-            active_procs--;
-        }
-
-        pid_t pid = fork();
-        if (pid == 0) {
-            sync_file(src_path, dst_path);
-	    system("pstree | grep -i alacritty");
-            exit(0);
-        } else if (pid > 0) {
-            active_procs++;
-        } else {
-            perror("Ошибка fork");
-        }
-    }
-
-    closedir(d1);
-
+    // Ожидание завершения всех процессов
     while (active_procs > 0) {
         wait(NULL);
         active_procs--;
