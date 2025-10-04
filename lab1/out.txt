@@ -1,0 +1,1 @@
+./task6.sh, task6.sh, 148
