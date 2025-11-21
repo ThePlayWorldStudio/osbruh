@@ -1,5 +1,0 @@
-/home/brew/gti/learn/sem3/os/labother/lab4/build/CMakeFiles/memory.dir
-/home/brew/gti/learn/sem3/os/labother/lab4/build/CMakeFiles/tests.dir
-/home/brew/gti/learn/sem3/os/labother/lab4/build/CMakeFiles/test.dir
-/home/brew/gti/learn/sem3/os/labother/lab4/build/CMakeFiles/edit_cache.dir
-/home/brew/gti/learn/sem3/os/labother/lab4/build/CMakeFiles/rebuild_cache.dir
