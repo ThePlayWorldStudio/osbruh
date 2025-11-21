@@ -1,6 +1,9 @@
-#include "memory.h"
 #include <UnitTest++/UnitTest++.h>
 #include <cstring>
+
+extern "C"{
+	#include "memory.h"
+}
 
 struct MemoryManagerFixture {
     MemoryManager* mm;
@@ -77,5 +80,9 @@ SUITE(MemoryManagerTests) {
         m_load(mm, seg);
         CHECK(!seg->loaded); // не должен загрузиться
     }
+}
+
+int main(){
+	return UnitTest::RunAllTests();
 }
 

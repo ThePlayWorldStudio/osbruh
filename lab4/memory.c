@@ -10,6 +10,7 @@ MemoryManager* m_init(int phys_size) {
 	mm->segment = NULL;
 	mm->seg_count = 0;
 	mm->lru = NULL;
+	mm->phys_size = phys_size;
 	mm->lru_count = 0;
 	memset(mm->phys, 0, phys_size);
 	return mm;
