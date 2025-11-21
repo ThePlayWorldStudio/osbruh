@@ -1,0 +1,30 @@
+Start testing: Nov 21 22:25 MSK
+----------------------------------------------------------
+1/1 Testing: TestAll
+1/1 Test: TestAll
+Command: "/home/brew/gti/learn/sem3/os/labother/lab4/build/tests"
+Directory: /home/brew/gti/learn/sem3/os/labother/lab4/build
+"TestAll" start time: Nov 21 22:25 MSK
+Output:
+----------------------------------------------------------
+Init: phys_size=0, phys_used=0
+Segments added: count=3
+Segment is too bigNo space to load segment 1
+Founded segment with id 1Access seg1: loaded=0, offset=-1
+Read seg1: 
+Segment is too bigNo space to load segment 2
+Founded segment with id 2Access seg2: loaded=0, offset=-1
+Segment is too bigNo space to load segment 3
+Founded segment with id 3Access seg3: loaded=0, offset=-1
+Seg1 after eviction: loaded=0
+Segment is too bigNo space to load segment 1
+Founded segment with id 1Seg1 reloaded: loaded=0, offset=-1
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"TestAll" end time: Nov 21 22:25 MSK
+"TestAll" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 21 22:25 MSK
